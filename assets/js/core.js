@@ -53,7 +53,11 @@
     // aria 'hidden': the split chars are hidden from screen readers and a plain copy of the text is read instead
     // (the default puts aria-label on the <p>, which is not allowed on a paragraph)
     const split = SplitText.create(el, { type: 'words,chars', aria: 'hidden' });
-    gsap.fromTo(split.chars, { opacity: 0.2 }, { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 45%', scrub: true } });
+    // each letter goes from 20 % of the text colour to the full colour. Colour, not opacity: 130+ letters with their own
+    // opacity made the phone build a compositing effect per letter every frame (about 60 fps with 30 frames over 40 ms on
+    // a Galaxy M15); with colour the same look costs only a repaint of the paragraph (0 frames over 40 ms)
+    const c = getComputedStyle(el).color.match(/[\d.]+/g).slice(0, 3).join(', ');
+    gsap.from(split.chars, { color: `rgba(${c}, 0.2)`, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 45%', scrub: true } });
   });
   // numbers: count up from 0 keeping the original format ("5,1", "1 600", "97,6%")
   HV.count = (sel) => $$(sel).forEach((el) => {
