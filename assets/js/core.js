@@ -108,6 +108,7 @@
     const vp = section.closest('.vp');
     return ScrollTrigger.create({
       trigger: vp, pin: true, start: 'top top', end: () => '+=' + (screens - 1) * innerHeight, scrub: true,
+      toggleClass: { targets: vp, className: 'is-pinned' }, // while pinned: lets the CSS fill the strip under the section when a phone hides its address bar
       onUpdate: (self) => onUpdate(self.progress), onRefresh: (self) => onUpdate(self.progress),
     });
   };

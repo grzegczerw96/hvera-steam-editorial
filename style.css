@@ -94,10 +94,10 @@
 .v3 .hero__sub { display: flex; gap: var(--s4); align-items: center; }
 .v3 .hero__sub b { width: var(--s1); height: var(--s1); border-radius: 50%; background: var(--teal); display: block; }
 .v3 .hero__card { align-self: stretch; }
-.v3 .hero__cap { position: absolute; left: var(--s5); bottom: var(--s5); display: flex; gap: var(--s3); align-items: center; padding: var(--s3) var(--s4) var(--s3) var(--s3); border-radius: 999px; background: rgba(246,247,244,.9); text-align: left; }
+.v3 .hero__cap { position: absolute; left: var(--s5); bottom: var(--s5); display: flex; gap: var(--s3); align-items: center; padding: var(--s3) var(--s4); border-radius: 999px; background: rgba(246,247,244,.9); text-align: left; }
 .v3 .hero__cap i { width: var(--s2); height: var(--s2); border-radius: 50%; background: #2fb36a; box-shadow: 0 0 0 var(--s1) rgba(47,179,106,.2); display: block; }
 .v3 .hero__cap .s { font-size: var(--t-h4); line-height: var(--lh-h4); }
-.v3 .hero__badge { position: absolute; right: var(--s5); bottom: var(--s5); width: var(--s26); height: var(--s26); border-radius: 50%; background: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s2); }
+.v3 .hero__badge { position: absolute; right: var(--s5); bottom: var(--s5); width: var(--s26); height: var(--s26); border-radius: 50%; background: var(--paper); display: flex; align-items: center; justify-content: center; } /* the arrow alone, centred (no "Scroll" label) */
 .v3 .hero__badge svg { width: var(--s4); height: var(--s6); }
 .v3 .hero__note { position: absolute; top: var(--s5); right: var(--s5); padding: var(--s2) var(--s3); border-radius: 999px; background: rgba(20,32,31,.55); color: var(--paper); }
 
@@ -617,11 +617,23 @@
 /* V3 live: pill nav, soft hovers, ring images */
 body.v3 { background: var(--paper); }
 .v3 { --ease: cubic-bezier(.6, 0, 0, 1); }
-/* hero start state until the entrance plays (html.intro is set in <head>, removed by intro() in v3.js) */
+/* hero entrance in CSS: it starts with the first paint (no wait for the motion scripts) and plays once.
+   Title lines (wrapped in .hl by site.js at the <br>) rise out of a mask; the card opens from a smaller frame; the
+   line under the title fades in. "backwards" holds the start state during each delay; afterwards no style is left */
+.v3 .hero .hl { display: block; overflow: clip; overflow-clip-margin: .1em; padding: 0 .1em .22em; margin: 0 -.1em -.22em; } /* room for descenders, as .ln-mask */
+.v3 .hero .hl > span { display: block; }
 @media (prefers-reduced-motion: no-preference) {
-  .intro .v3 .hero .s-hero, .intro .v3 .hero__sub { visibility: hidden; }
-  .intro .v3 .hero__card { clip-path: inset(18% 14% 0% 14% round 1.25em); }
+  .v3 .hero .hl > span { animation: v3-line .9s var(--ease) backwards; }
+  .v3 .hero .hl + .hl > span { animation-delay: .08s; }
+  .v3 .hero__card { animation: v3-card 1s var(--ease) .05s backwards; }
+  .v3 .hero__sub { animation: v3-sub .6s var(--ease) .3s backwards; }
 }
+@keyframes v3-line { from { transform: translateY(160%); } } /* fully under the mask (incl. its descender room) at the start */
+@keyframes v3-card { from { clip-path: inset(18% 14% 0% 14% round 1.25em); } to { clip-path: inset(0 round var(--r)); } }
+@keyframes v3-sub { from { opacity: 0; transform: translateY(-12px); } }
+/* pinned depth on phones: the section is one small screen tall (100svh, address bar shown); when the browser hides its
+   address bar the screen grows to 100lvh, so the section's background continues under it instead of leaving a paper strip */
+.v3 .vp.is-pinned[data-sec="depth"]::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: calc(100lvh - 100svh); background: var(--glacier); pointer-events: none; }
 .v3 .ui-layer .nav { transition: transform .6s var(--ease); }
 .v3 .ui-layer .nav.is-hidden { transform: translate(-50%, -160%); }
 @container page (max-width: 991px) { .v3 .ui-layer .nav.is-hidden { transform: translateY(-160%); } }

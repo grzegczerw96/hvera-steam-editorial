@@ -60,17 +60,9 @@ HV.ready(({ gsap, ScrollTrigger, ease, $$, data, reduce }) => {
       .from($$('.menu__links li', layer), { yPercent: 30, opacity: 0, duration: 0.6, stagger: 0.04, ease }, '-=0.3'),
   });
 
-  /* hero entrance on the first visit (no loader: the hero is the first thing painted); after a rebuild it is already at rest
-     (HV.dur → 0). Until the script runs, html.intro holds the hero in its start state (v3.live.css), so nothing flashes */
-  const intro = () => {
-    document.documentElement.classList.remove('intro');
-    HV.lines('.hero .s-hero', { trigger: false });
-    if (!reduce) {
-      gsap.from('.hero__card', { clipPath: 'inset(18% 14% 0% 14% round 1.25em)', duration: HV.dur(1.6), ease, delay: HV.dur(0.15) });
-      gsap.from('.hero__sub', { opacity: 0, y: -12, duration: HV.dur(0.8), ease, delay: HV.dur(0.5) }); // nav is left alone: its transform belongs to the hide-on-scroll class
-    }
-  };
-  let ctx = null, introCtx = null, introDone = false;
+  /* hero entrance: pure CSS from the first paint (v3.live.css, title lines wrapped by site.js), so it needs no script
+     and a rebuild never replays it */
+  let ctx = null;
 
   const build = (rebuild) => {
     ctx = gsap.context(() => {
@@ -138,8 +130,6 @@ HV.ready(({ gsap, ScrollTrigger, ease, $$, data, reduce }) => {
       /* contact background slides from paper to lagoon as the section arrives */
       if (!reduce) gsap.fromTo('.contact', { backgroundColor: '#f6f7f4' }, { backgroundColor: '#a8dadd', ease: 'none', scrollTrigger: { trigger: '.contact', start: 'top bottom', end: 'top 30%', scrub: true } });
     });
-    // after a window change the hero is rebuilt at rest inside this build (the first entrance had its own context)
-    if (rebuild && introDone) { if (introCtx) { introCtx.revert(); introCtx = null; } ctx.add(intro); }
     ScrollTrigger.refresh();
   };
   const clear = () => {
@@ -147,24 +137,15 @@ HV.ready(({ gsap, ScrollTrigger, ease, $$, data, reduce }) => {
     ctx.revert(); // kills this build's scroll scenes and tweens, reverts split text and the styles they set
   };
 
-  /* hero entrance at once (with no .loader element HV.loader plays it straight away) */
-  HV.loader(() => { introDone = true; introCtx = gsap.context(intro); });
-
   /* the scroll scenes (reveals, depth pin, nav) are built when the visitor first moves (scroll, wheel, touch, key)
      or after 5 s: the heavy first build (split text, measuring the page) never runs during the hero entrance or the
      page load. Everything it animates is below the hero, so nothing visible changes before it runs */
   let started = false;
   const moves = ['scroll', 'wheel', 'touchstart', 'pointerdown', 'keydown', 'resize'];
-  const begin = (e) => {
+  const begin = () => {
     if (started) return; started = true;
     moves.forEach((m) => removeEventListener(m, begin, { passive: true }));
     Okno.start({ build, clear, content: document.querySelector('main') });
-    // the window changed before the scenes existed: split the hero title again for the new width, at rest (no replay)
-    if (e && e.type === 'resize' && introDone) {
-      if (introCtx) { introCtx.revert(); introCtx = null; }
-      const dur = HV.dur; HV.dur = () => 0; ctx.add(intro); HV.dur = dur;
-      ScrollTrigger.refresh();
-    }
   };
   moves.forEach((e) => addEventListener(e, begin, { passive: true }));
   setTimeout(begin, 5000);

@@ -126,10 +126,10 @@ background: rgba(246,247,244,.92); box-shadow: inset 0 0 0 1px var(--line); whit
 .v3 .hero__sub { display: flex; gap: var(--s4); align-items: center; }
 .v3 .hero__sub b { width: var(--s1); height: var(--s1); border-radius: 50%; background: var(--teal); display: block; }
 .v3 .hero__card { align-self: stretch; }
-.v3 .hero__cap { position: absolute; left: var(--s5); bottom: var(--s5); display: flex; gap: var(--s3); align-items: center; padding: var(--s3) var(--s4) var(--s3) var(--s3); border-radius: 999px; background: rgba(246,247,244,.9); text-align: left; }
+.v3 .hero__cap { position: absolute; left: var(--s5); bottom: var(--s5); display: flex; gap: var(--s3); align-items: center; padding: var(--s3) var(--s4); border-radius: 999px; background: rgba(246,247,244,.9); text-align: left; }
 .v3 .hero__cap i { width: var(--s2); height: var(--s2); border-radius: 50%; background: #2fb36a; box-shadow: 0 0 0 var(--s1) rgba(47,179,106,.2); display: block; }
 .v3 .hero__cap .s { font-size: var(--t-h4); line-height: var(--lh-h4); }
-.v3 .hero__badge { position: absolute; right: var(--s5); bottom: var(--s5); width: var(--s26); height: var(--s26); border-radius: 50%; background: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s2); }
+.v3 .hero__badge { position: absolute; right: var(--s5); bottom: var(--s5); width: var(--s26); height: var(--s26); border-radius: 50%; background: var(--paper); display: flex; align-items: center; justify-content: center; }
 .v3 .hero__badge svg { width: var(--s4); height: var(--s6); }
 .v3 .hero__note { position: absolute; top: var(--s5); right: var(--s5); padding: var(--s2) var(--s3); border-radius: 999px; background: rgba(20,32,31,.55); color: var(--paper); }
 .v3 .about__l { grid-column: 1 / 8; display: flex; flex-direction: column; justify-content: space-between; gap: var(--s16); }
@@ -552,10 +552,18 @@ background: rgba(246,247,244,.92); box-shadow: inset 0 0 0 1px var(--line); whit
 .v3 .link.is-h { color: var(--teal); }
 body.v3 { background: var(--paper); }
 .v3 { --ease: cubic-bezier(.6, 0, 0, 1); }
+.v3 .hero .hl { display: block; overflow: clip; overflow-clip-margin: .1em; padding: 0 .1em .22em; margin: 0 -.1em -.22em; }
+.v3 .hero .hl > span { display: block; }
 @media (prefers-reduced-motion: no-preference) {
-.intro .v3 .hero .s-hero, .intro .v3 .hero__sub { visibility: hidden; }
-.intro .v3 .hero__card { clip-path: inset(18% 14% 0% 14% round 1.25em); }
+.v3 .hero .hl > span { animation: v3-line .9s var(--ease) backwards; }
+.v3 .hero .hl + .hl > span { animation-delay: .08s; }
+.v3 .hero__card { animation: v3-card 1s var(--ease) .05s backwards; }
+.v3 .hero__sub { animation: v3-sub .6s var(--ease) .3s backwards; }
 }
+@keyframes v3-line { from { transform: translateY(160%); } }
+@keyframes v3-card { from { clip-path: inset(18% 14% 0% 14% round 1.25em); } to { clip-path: inset(0 round var(--r)); } }
+@keyframes v3-sub { from { opacity: 0; transform: translateY(-12px); } }
+.v3 .vp.is-pinned[data-sec="depth"]::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: calc(100lvh - 100svh); background: var(--glacier); pointer-events: none; }
 .v3 .ui-layer .nav { transition: transform .6s var(--ease); }
 .v3 .ui-layer .nav.is-hidden { transform: translate(-50%, -160%); }
 @container page (max-width: 991px) { .v3 .ui-layer .nav.is-hidden { transform: translateY(-160%); } }
@@ -613,7 +621,6 @@ body.v3 { background: var(--paper); }
 @media (min-width: 992px) and (max-aspect-ratio: 4/5) { .fx { --dw: 52.125; --dh: 67.5; --umin: 12px; } }
 @media (min-width: 992px) and (max-aspect-ratio: 4/5) { .only-d { display: none !important; } .only-tm { display: revert !important; } }
 </style>
-<script>document.documentElement.classList.add('intro');setTimeout(function(){document.documentElement.classList.remove('intro')},6000)</script>
 </head>
 <body class="v3">
 <div class="vp ui-layer"><div class="fx ui">
@@ -641,14 +648,14 @@ body.v3 { background: var(--paper); }
   
   <span class="corner l mono mute">64°N · Reykjavík</span><span class="corner r mono mute">EN / IS</span>
   <div class="hero__head">
-    <h1 class="s s-hero">Heat, <i>patiently</i> drawn<br>from the deep.</h1>
+    <h1 class="s s-hero"><span class="hl"><span>Heat, <i>patiently</i> drawn</span></span><span class="hl"><span>from the deep.</span></span></h1>
     <div class="hero__sub mono mute"><span>Geothermal drilling &amp; power</span><b></b><span>214 wells in 11 countries</span><b></b><span>Since 1998</span></div>
   </div>
   <div class="card hero__card fill">
     <img src="assets/img/v3/plant-aerial-800.webp" srcset="assets/img/v3/plant-aerial-480.webp 480w, assets/img/v3/plant-aerial-800.webp 800w, assets/img/v3/plant-aerial-1200.webp 1200w, assets/img/v3/plant-aerial-1600.webp 1600w" sizes="100vw" fetchpriority="high" decoding="async" alt="">
     <span class="hero__note mono">Svartá field, North Iceland</span>
     <div class="hero__cap"><i></i><span class="mono">Live output</span><span class="s">118,4 MW</span></div>
-    <div class="hero__badge"><span class="mono">Scroll</span><svg viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5 0v13M1 9l4 4 4-4"/></svg></div>
+    <div class="hero__badge" aria-hidden="true"><svg viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5 0v13M1 9l4 4 4-4"/></svg></div>
   </div>
 </section></div>
 <div class="vp" data-sec="about">
