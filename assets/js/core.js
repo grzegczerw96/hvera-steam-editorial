@@ -50,7 +50,9 @@
   // lead paragraphs: each character goes .2 → 1 opacity, scrubbed (cominvi pattern)
   HV.chars = (sel) => $$(sel).forEach((el) => {
     if (reduce) return;
-    const split = SplitText.create(el, { type: 'words,chars' });
+    // aria 'hidden': the split chars are hidden from screen readers and a plain copy of the text is read instead
+    // (the default puts aria-label on the <p>, which is not allowed on a paragraph)
+    const split = SplitText.create(el, { type: 'words,chars', aria: 'hidden' });
     gsap.fromTo(split.chars, { opacity: 0.2 }, { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 45%', scrub: true } });
   });
   // numbers: count up from 0 keeping the original format ("5,1", "1 600", "97,6%")
