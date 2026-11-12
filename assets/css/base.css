@@ -27,7 +27,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .fx {
   --k: 1; --dw: 90; --dh: 56.25; --umin: 12px; --umax: 40px;
   position: relative; overflow: hidden; width: 100%; height: calc(var(--vh) * var(--k));
-  font-size: clamp(var(--umin), min(calc(var(--w) / var(--dw)), calc(var(--vh) / var(--dh))), var(--umax));
+  /* --u: the section unit as an absolute length (no em), so every descendant resolves the same px value;
+     design-system tokens (--sN spacing, --t-* type, --lh-* line heights) are multiples of it */
+  --u: clamp(var(--umin), min(calc(var(--w) / var(--dw)), calc(var(--vh) / var(--dh))), var(--umax));
+  font-size: var(--u);
   line-height: 1;
 }
 @container page (max-width: 991px) { .fx { --dw: 52.125; --dh: 67.5; --umin: 12px; } }
@@ -52,4 +55,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .loader { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; }
 .loader svg { width: 3.5rem; height: 3.5rem; }
 .ln { overflow: clip; overflow-clip-margin: .1em; }
+/* SplitText line masks: tight display leading (< 1) would clip descenders and italic overhangs, so pad the mask
+   and pull the padding back with negative margins (layout unchanged; lines start at yPercent 130 to stay hidden) */
+.ln-mask { padding: 0 .1em .22em; margin: 0 -.1em -.22em; }
 @media (prefers-reduced-motion: reduce) { .loader { display: none; } }

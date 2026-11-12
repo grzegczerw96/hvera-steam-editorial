@@ -23,6 +23,8 @@
 
   const HV = (window.HV = { gsap, ScrollTrigger, ease, reduce, canHover, lenis, $$ });
   HV.data = window.HV_DATA || {};
+  // entrance durations and delays: 0 right after a resize rebuild (okno.js), so nothing plays twice; unchanged without okno.js
+  HV.dur = (s) => (window.Okno ? window.Okno.dur(s) : s);
 
   HV.fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   // piecewise-linear interpolation through (xs, ys)
@@ -34,13 +36,13 @@
   HV.scrollTo = (target) => (lenis ? lenis.scrollTo(target, { duration: 1.4 }) : (typeof target === 'number' ? scrollTo(0, target) : target.scrollIntoView()));
 
   /* ---------- reveals ---------- */
-  // title lines slide up out of a mask; re-split on resize (autoSplit), play once
+  // title lines slide up out of a mask; play once. Re-split on resize: by autoSplit, or with okno.js by the page's rebuild
   HV.lines = (sel, opts = {}) => $$(sel).forEach((el) => {
     if (reduce) return;
     SplitText.create(el, {
-      type: 'lines', mask: 'lines', linesClass: 'ln', autoSplit: true,
+      type: 'lines', mask: 'lines', linesClass: 'ln', autoSplit: !window.Okno,
       onSplit: (self) => gsap.from(self.lines, {
-        yPercent: 110, duration: 1.2, stagger: 0.08, ease, delay: opts.delay || 0,
+        yPercent: 130, duration: HV.dur(1.2), stagger: HV.dur(0.08), ease, delay: HV.dur(opts.delay || 0), // mask has room for descenders (base.css)
         scrollTrigger: opts.trigger === false ? undefined : { trigger: el, start: 'top 88%', once: true },
       }),
     });
@@ -55,7 +57,7 @@
   HV.count = (sel) => $$(sel).forEach((el) => {
     const node = [...el.childNodes].find((n) => n.nodeType === 3 && /\d/.test(n.nodeValue));
     if (!node || reduce) return;
-    const raw = node.nodeValue;
+    const raw = node._raw || (node._raw = node.nodeValue); // the original text, also after a rebuild stopped the count midway
     const m = raw.match(/[\d\s]*\d(?:,\d+)?/);
     if (!m) return;
     const decimals = (m[0].split(',')[1] || '').length;
@@ -63,7 +65,7 @@
     const o = { v: 0 };
     const out = () => { const s = o.v.toFixed(decimals).replace('.', ','); node.nodeValue = raw.replace(m[0], decimals ? s : HV.fmt(o.v)); };
     out();
-    gsap.to(o, { v: target, duration: 1.6, ease: 'power2.out', onUpdate: out, scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
+    gsap.to(o, { v: target, duration: HV.dur(1.6), ease: 'power2.out', onUpdate: out, scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
   });
   // images settle from 1.15 to 1 while their frame crosses the screen
   HV.parallax = (sel, from = 1.15) => $$(sel).forEach((img) => {
@@ -72,7 +74,7 @@
   });
   HV.fadeUp = (sel, opts = {}) => $$(sel).forEach((el) => {
     if (reduce) return;
-    gsap.from(el.children.length && opts.children ? el.children : el, { y: opts.y || 40, opacity: 0, duration: 1, stagger: 0.08, ease, scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
+    gsap.from(el.children.length && opts.children ? el.children : el, { y: opts.y || 40, opacity: 0, duration: HV.dur(1), stagger: HV.dur(0.08), ease, scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
   });
 
   /* ---------- hover states (classes come from the design system) ---------- */
@@ -125,13 +127,16 @@
     HV.closeMenu = () => open && set(false);
   };
 
-  // nav labels → sections (labels are plain words: About, Services, Depth …)
+  // nav labels → sections: data-go="about" when the template sets it, else the label itself (About, Services …)
   HV.linkNav = (sel) => $$(sel).forEach((el) => {
-    const key = el.textContent.trim().toLowerCase().replace(/^\[\d+\]\s*/, '');
+    const key = el.dataset.go || el.textContent.trim().toLowerCase().replace(/^\[\d+\]\s*/, '');
     const vp = document.querySelector(`main .vp[data-sec="${key === 'home' ? 'hero' : key}"]`);
     if (!vp) return;
     el.style.cursor = 'pointer';
-    el.addEventListener('click', () => { HV.closeMenu && HV.closeMenu(); HV.scrollTo(vp); });
+    el.setAttribute('role', 'link'); el.tabIndex = 0;
+    const go = () => { HV.closeMenu && HV.closeMenu(); HV.scrollTo(vp); };
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), go()));
   });
 
   /* ---------- loader → intro ---------- */
