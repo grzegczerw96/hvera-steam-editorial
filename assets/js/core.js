@@ -20,6 +20,11 @@
     gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
   }
+  // touch screens (trial, user's decision 2026-11-12): the page, not the browser, moves on a finger drag, as Lenis does
+  // for the wheel on desktop. Pins then switch in the same frame as the scroll (no jump or catch-up when a pinned section
+  // starts or ends), and the browser keeps its address bar in place, so the screen height stays the same and a full-screen
+  // section stays exactly full screen
+  const normalizer = !reduce && ScrollTrigger.isTouch === 1 ? ScrollTrigger.normalizeScroll(true) : null;
 
   const HV = (window.HV = { gsap, ScrollTrigger, ease, reduce, canHover, lenis, $$ });
   HV.data = window.HV_DATA || {};
@@ -125,8 +130,8 @@
     let open = false;
     const set = (v) => {
       open = v;
-      if (v) { layer.style.visibility = 'visible'; layer.classList.add('is-open'); lenis && lenis.stop(); tl.timeScale(1).play(); }
-      else { lenis && lenis.start(); tl.timeScale(1.6).reverse().eventCallback('onReverseComplete', () => { layer.style.visibility = 'hidden'; layer.classList.remove('is-open'); }); }
+      if (v) { layer.style.visibility = 'visible'; layer.classList.add('is-open'); lenis && lenis.stop(); normalizer && normalizer.disable(); tl.timeScale(1).play(); }
+      else { lenis && lenis.start(); normalizer && normalizer.enable(); tl.timeScale(1.6).reverse().eventCallback('onReverseComplete', () => { layer.style.visibility = 'hidden'; layer.classList.remove('is-open'); }); }
     };
     $$(openers).forEach((b) => b.addEventListener('click', () => set(!open)));
     $$(closers, layer).forEach((b) => b.addEventListener('click', () => set(false)));

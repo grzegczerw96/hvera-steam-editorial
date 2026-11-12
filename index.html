@@ -564,8 +564,6 @@ body.v3 { background: var(--paper); }
 @keyframes v3-line { from { transform: translateY(160%); } }
 @keyframes v3-card { from { clip-path: inset(18% 14% 0% 14% round 1.25em); } to { clip-path: inset(0 round var(--r)); } }
 @keyframes v3-sub { from { opacity: 0; transform: translateY(-12px); } }
-.v3 .vp.is-pinned[data-sec="depth"] > .depth { height: 100dvh; }
-.v3 .vp[data-sec="depth"] > .depth { transition: height .35s var(--ease); }
 .v3 .vp.is-pinned[data-sec="depth"]::after { content: ''; position: absolute; z-index: -1; left: 0; right: 0; top: calc(100% - 2px); height: calc(100lvh - 100svh + 2px); background: var(--glacier); pointer-events: none; }
 .v3 .ui-layer .nav { transition: transform .6s var(--ease); }
 .v3 .ui-layer .nav.is-hidden { transform: translate(-50%, -160%); }
