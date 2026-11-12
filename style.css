@@ -97,7 +97,7 @@
 .v3 .hero__cap { position: absolute; left: var(--s5); bottom: var(--s5); display: flex; gap: var(--s3); align-items: center; padding: var(--s3) var(--s4); border-radius: 999px; background: rgba(246,247,244,.9); text-align: left; }
 .v3 .hero__cap i { width: var(--s2); height: var(--s2); border-radius: 50%; background: #2fb36a; box-shadow: 0 0 0 var(--s1) rgba(47,179,106,.2); display: block; }
 .v3 .hero__cap .s { font-size: var(--t-h4); line-height: var(--lh-h4); }
-.v3 .hero__badge { position: absolute; right: var(--s5); bottom: var(--s5); width: var(--s26); height: var(--s26); border-radius: 50%; background: var(--paper); display: flex; align-items: center; justify-content: center; } /* the arrow alone, centred (no "Scroll" label) */
+.v3 .hero__badge { position: absolute; right: var(--s5); bottom: var(--s5); width: var(--s26); height: var(--s26); border-radius: 50%; background: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s2); } /* label + arrow; on phones the arrow alone (v3.resp.css) */
 .v3 .hero__badge svg { width: var(--s4); height: var(--s6); }
 .v3 .hero__note { position: absolute; top: var(--s5); right: var(--s5); padding: var(--s2) var(--s3); border-radius: 999px; background: rgba(20,32,31,.55); color: var(--paper); }
 
@@ -462,6 +462,7 @@
   .v3 .hero__note { display: none; }
   .v3 .hero__cap { left: var(--s3); bottom: var(--s3); }
   .v3 .hero__badge { width: var(--s16); height: var(--s16); right: var(--s3); bottom: var(--s3); }
+  .v3 .hero__badge .mono { display: none; } /* phones: the arrow alone, centred */
 
   /* about: planned 2 screens: lead + photo, then the figure */
   .v3 .about { --k: 2; }
@@ -631,9 +632,13 @@ body.v3 { background: var(--paper); }
 @keyframes v3-line { from { transform: translateY(160%); } } /* fully under the mask (incl. its descender room) at the start */
 @keyframes v3-card { from { clip-path: inset(18% 14% 0% 14% round 1.25em); } to { clip-path: inset(0 round var(--r)); } }
 @keyframes v3-sub { from { opacity: 0; transform: translateY(-12px); } }
-/* pinned depth on phones: the section is one small screen tall (100svh, address bar shown); when the browser hides its
-   address bar the screen grows to 100lvh, so the section's background continues under it instead of leaving a paper strip */
-.v3 .vp.is-pinned[data-sec="depth"]::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: calc(100lvh - 100svh); background: var(--glacier); pointer-events: none; }
+/* pinned depth on phones: the section is laid out on the small screen (100svh, address bar shown). While it is pinned it
+   takes the screen's current height (100dvh), so when the browser hides its address bar the section stretches to the
+   bottom (the cross-section takes the extra room; type keeps its size, u still comes from svh). Under it, a strip in its
+   colour covers the moment before the browser reports the new height. On desktop all three heights are equal */
+.v3 .vp.is-pinned[data-sec="depth"] > .depth { height: 100dvh; }
+.v3 .vp[data-sec="depth"] > .depth { transition: height .35s var(--ease); }
+.v3 .vp.is-pinned[data-sec="depth"]::after { content: ''; position: absolute; z-index: -1; left: 0; right: 0; top: calc(100% - 2px); height: calc(100lvh - 100svh + 2px); background: var(--glacier); pointer-events: none; }
 .v3 .ui-layer .nav { transition: transform .6s var(--ease); }
 .v3 .ui-layer .nav.is-hidden { transform: translate(-50%, -160%); }
 @container page (max-width: 991px) { .v3 .ui-layer .nav.is-hidden { transform: translateY(-160%); } }

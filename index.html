@@ -129,7 +129,7 @@ background: rgba(246,247,244,.92); box-shadow: inset 0 0 0 1px var(--line); whit
 .v3 .hero__cap { position: absolute; left: var(--s5); bottom: var(--s5); display: flex; gap: var(--s3); align-items: center; padding: var(--s3) var(--s4); border-radius: 999px; background: rgba(246,247,244,.9); text-align: left; }
 .v3 .hero__cap i { width: var(--s2); height: var(--s2); border-radius: 50%; background: #2fb36a; box-shadow: 0 0 0 var(--s1) rgba(47,179,106,.2); display: block; }
 .v3 .hero__cap .s { font-size: var(--t-h4); line-height: var(--lh-h4); }
-.v3 .hero__badge { position: absolute; right: var(--s5); bottom: var(--s5); width: var(--s26); height: var(--s26); border-radius: 50%; background: var(--paper); display: flex; align-items: center; justify-content: center; }
+.v3 .hero__badge { position: absolute; right: var(--s5); bottom: var(--s5); width: var(--s26); height: var(--s26); border-radius: 50%; background: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s2); }
 .v3 .hero__badge svg { width: var(--s4); height: var(--s6); }
 .v3 .hero__note { position: absolute; top: var(--s5); right: var(--s5); padding: var(--s2) var(--s3); border-radius: 999px; background: rgba(20,32,31,.55); color: var(--paper); }
 .v3 .about__l { grid-column: 1 / 8; display: flex; flex-direction: column; justify-content: space-between; gap: var(--s16); }
@@ -434,6 +434,7 @@ background: rgba(246,247,244,.92); box-shadow: inset 0 0 0 1px var(--line); whit
 .v3 .hero__note { display: none; }
 .v3 .hero__cap { left: var(--s3); bottom: var(--s3); }
 .v3 .hero__badge { width: var(--s16); height: var(--s16); right: var(--s3); bottom: var(--s3); }
+.v3 .hero__badge .mono { display: none; }
 .v3 .about { --k: 2; }
 .v3 .about .grid.fill { display: grid; grid-template-columns: 1fr; grid-template-rows: 1fr var(--vh); }
 .v3 .about__l, .v3 .about__r { grid-column: 1 / -1; }
@@ -563,7 +564,9 @@ body.v3 { background: var(--paper); }
 @keyframes v3-line { from { transform: translateY(160%); } }
 @keyframes v3-card { from { clip-path: inset(18% 14% 0% 14% round 1.25em); } to { clip-path: inset(0 round var(--r)); } }
 @keyframes v3-sub { from { opacity: 0; transform: translateY(-12px); } }
-.v3 .vp.is-pinned[data-sec="depth"]::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: calc(100lvh - 100svh); background: var(--glacier); pointer-events: none; }
+.v3 .vp.is-pinned[data-sec="depth"] > .depth { height: 100dvh; }
+.v3 .vp[data-sec="depth"] > .depth { transition: height .35s var(--ease); }
+.v3 .vp.is-pinned[data-sec="depth"]::after { content: ''; position: absolute; z-index: -1; left: 0; right: 0; top: calc(100% - 2px); height: calc(100lvh - 100svh + 2px); background: var(--glacier); pointer-events: none; }
 .v3 .ui-layer .nav { transition: transform .6s var(--ease); }
 .v3 .ui-layer .nav.is-hidden { transform: translate(-50%, -160%); }
 @container page (max-width: 991px) { .v3 .ui-layer .nav.is-hidden { transform: translateY(-160%); } }
@@ -655,7 +658,7 @@ body.v3 { background: var(--paper); }
     <img src="assets/img/v3/plant-aerial-800.webp" srcset="assets/img/v3/plant-aerial-480.webp 480w, assets/img/v3/plant-aerial-800.webp 800w, assets/img/v3/plant-aerial-1200.webp 1200w, assets/img/v3/plant-aerial-1600.webp 1600w" sizes="100vw" fetchpriority="high" decoding="async" alt="">
     <span class="hero__note mono">Svartá field, North Iceland</span>
     <div class="hero__cap"><i></i><span class="mono">Live output</span><span class="s">118,4 MW</span></div>
-    <div class="hero__badge" aria-hidden="true"><svg viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5 0v13M1 9l4 4 4-4"/></svg></div>
+    <div class="hero__badge" aria-hidden="true"><span class="mono">Scroll</span><svg viewBox="0 0 10 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5 0v13M1 9l4 4 4-4"/></svg></div>
   </div>
 </section></div>
 <div class="vp" data-sec="about">
